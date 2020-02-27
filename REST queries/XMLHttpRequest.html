@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+  <!--<![endif]-->
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>XHR example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div id="result"></div>
+    <script>
+      // XHR request helper 
+      const makeRequest = (url, method) => {
+        const request = new XMLHttpRequest();
+        return new Promise((resolve, reject) => {
+          request.onreadystatechange = () => {
+            if (request.readyState !== 4) return;  // only run if request complete
+            if (request.status >= 200 && request.status < 300) {
+              resolve(JSON.parse(request.response));  // request successful
+            } else {
+              reject({
+                status: request.status,
+                statusText: request.statusText
+              });
+            }
+          };
+          request.open(method || "GET", url, true);
+          request.send();
+        });
+      };
+
+      const enactQuery = () => {
+        return new Promise((resolve, reject) => {
+          makeRequest("https://jsonplaceholder.typicode.com/todos/1")
+            .then(responseData => {
+              resolve(responseData);
+            })
+            .catch(error => {
+              reject({
+                status: error,
+                statusText: "Something went wrong"
+              });
+            });
+        });
+      };
+
+      enactQuery().then(res => {
+        document.getElementById("result").innerHTML = res.title;
+      });
+    </script>
+  </body>
+</html>
